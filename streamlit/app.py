@@ -31,7 +31,7 @@ if 'mqttc' not in st.session_state:
 
 model = YOLO('best.pt')
 
-st.title("🍾 Revoira Object Detection")
+st.title("🍔 Tap N Go Object Detection")
 
 # ===== MQTT Status Section =====
 with st.sidebar.expander("🔌 MQTT Connection Status", expanded=True):
@@ -52,7 +52,7 @@ with st.expander("⚠️ Important Model Notes", expanded=True):
     This model's purpose was to detect a type of bottles based on its material 
                 
     - **List of classes:** 
-      - 🥫 can-bottle | 🧴 plastic-bottle | 🍾 glass-bottle | 📦 tetrapak
+      - 🍱 bento | 🥡 rice-bowl
                 
     **Current Limitations:**
                 

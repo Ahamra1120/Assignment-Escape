@@ -29,7 +29,7 @@ if 'mqttc' not in st.session_state:
     except Exception as e:
         st.error(f"MQTT Connection Error: {str(e)}")
 
-model = YOLO('Ahamra1120/Assignment-Escape/streamlit/best.pt')
+model = YOLO('best.pt')
 
 st.title("🍾 Revoira Object Detection")
 

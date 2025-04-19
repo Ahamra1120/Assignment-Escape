@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['bento', 'rice-bowl']
+
+roboflow:
+  workspace: m2jtsic6
+  project: deteksi-makanan-g5mnv
+  version: 6
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/m2jtsic6/deteksi-makanan-g5mnv/dataset/6

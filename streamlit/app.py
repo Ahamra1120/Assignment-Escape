@@ -14,54 +14,6 @@ import av
 # Load environment variables
 load_dotenv()
 
-# Page configuration
-st.set_page_config(
-    page_title="Tap N Go Object Detection",
-    page_icon="🍔",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Custom CSS for styling
-st.markdown("""
-    <style>
-        .stApp {
-            background-color: #f5f5f5;
-        }
-        .stSidebar {
-            background-color: #2c3e50 !important;
-            color: white;
-        }
-        .sidebar .sidebar-content {
-            background-color: #2c3e50;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            color: #2c3e50;
-        }
-        .st-bb {
-            background-color: white;
-        }
-        .st-at {
-            background-color: #e74c3c;
-        }
-        .st-ax {
-            color: #2c3e50;
-        }
-        .stAlert {
-            border-radius: 10px;
-        }
-        .stFileUploader > div > div {
-            border: 2px dashed #3498db;
-            border-radius: 10px;
-            padding: 20px;
-        }
-        .css-1aumxhk {
-            background-color: #3498db;
-            color: white;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 # Initialize MQTT client
 if 'mqttc' not in st.session_state:
     try:
@@ -79,24 +31,40 @@ if 'mqttc' not in st.session_state:
 
 model = YOLO('best.pt')
 
+# Page configuration
+st.set_page_config(
+    page_title="Tap N Go Object Detection",
+    page_icon="🍔",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Minimal CSS that works with dark mode
+st.markdown("""
+    <style>
+        .stFileUploader > div > div {
+            border: 2px dashed;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .streamlit-expanderHeader {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # Main title with icon and description
 st.title("🍔 Tap N Go Object Detection")
 st.markdown("""
-    <div style="background-color: #e8f4fc; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-        <p style="margin: 0; color: #2c3e50;">
-            Real-time object detection system for food container classification. 
-            Upload images/videos or use live webcam feed.
-        </p>
-    </div>
-""", unsafe_allow_html=True)
+    Real-time object detection system for food container classification. 
+    Upload images/videos or use live webcam feed.
+""")
 
 # ===== Sidebar Sections =====
 with st.sidebar:
-    st.markdown("""
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: white;">⚙️ Settings</h2>
-        </div>
-    """, unsafe_allow_html=True)
+    st.header("⚙️ Settings")
     
     # Input type selection
     input_type = st.radio(
@@ -119,17 +87,13 @@ with st.sidebar:
     with st.expander("🔌 MQTT Connection Status", expanded=True):
         try:
             if st.session_state.mqttc.is_connected():
-                st.success("✅ Connected", icon="✅")
+                st.success("✅ Connected")
             else:
-                st.error("❌ Disconnected", icon="❌")
+                st.error("❌ Disconnected")
             
-            st.markdown(f"""
-                <div style="background-color: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 10px;">
-                    <p style="margin: 5px 0; font-size: 0.8em;"><b>Broker:</b> {os.getenv('MQTT_SERVER')}:{os.getenv('MQTT_PORT')}</p>
-                    <p style="margin: 5px 0; font-size: 0.8em;"><b>Topic:</b> {os.getenv('MQTT_TOPIC')}</p>
-                    <p style="margin: 5px 0; font-size: 0.8em;"><b>Client ID:</b> {os.getenv('CLIENT_ID')}</p>
-                </div>
-            """, unsafe_allow_html=True)
+            st.caption(f"Broker: {os.getenv('MQTT_SERVER')}:{os.getenv('MQTT_PORT')}")
+            st.caption(f"Topic: {os.getenv('MQTT_TOPIC')}")
+            st.caption(f"Client ID: {os.getenv('CLIENT_ID')}")
         except Exception as e:
             st.error(f"MQTT Status Error: {str(e)}")
 
@@ -289,35 +253,16 @@ elif input_type == "Webcam":
         Detections will be processed in real-time.
     """)
     
-    # Webcam container with border
-    with st.container():
-        st.markdown("""
-            <div style="border: 2px solid #3498db; border-radius: 10px; padding: 10px;">
-        """, unsafe_allow_html=True)
-        
-        webrtc_streamer(
-            key="object-detection",
-            video_processor_factory=VideoProcessor,
-            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-            media_stream_constraints={"video": True, "audio": False},
-            async_processing=True
-        )
-        
-        st.markdown("</div>", unsafe_allow_html=True)
+    webrtc_streamer(
+        key="object-detection",
+        video_processor_factory=VideoProcessor,
+        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+        media_stream_constraints={"video": True, "audio": False},
+        async_processing=True
+    )
 
 # Footer
 st.markdown("---")
 st.markdown("""
-    <div style="text-align: center; color: #7f8c8d; font-size: 0.9em;">
-        <p>Tap N Go Object Detection System • Powered by YOLOv8</p>
-    </div>
-""", unsafe_allow_html=True)
-
-# Cleanup when app stops
-def on_app_close():
-    if 'mqttc' in st.session_state:
-        st.session_state.mqttc.loop_stop()
-        st.session_state.mqttc.disconnect()
-
-import atexit
-atexit.register(on_app_close)
+**Tap N Go Object Detection System • Powered by YOLOv8**
+""")

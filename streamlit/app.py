@@ -72,6 +72,7 @@ if 'mqttc' not in st.session_state:
         st.session_state.mqttc.connect(
             os.getenv("MQTT_SERVER"),
             int(os.getenv("MQTT_PORT"))
+        )
         st.session_state.mqttc.loop_start()
     except Exception as e:
         st.error(f"MQTT Connection Error: {str(e)}")
